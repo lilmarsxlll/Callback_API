@@ -52,12 +52,12 @@ async def reserve_status(
         if reservations is None:
             return ReserveResponse(
                 status="error",
-                message="Not enough stock available.",
+                message="Reservation not found.",
                 reservation_id=reservation_id,
             )
         return ReserveResponse(
             status="success",
-            message="Reservation completed successfully.",
+            message="Reservation found.",
             reservation_id=reservation_id,
         )
 
