@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class ReserveStatus(BaseModel):
+class ReserveResponse(BaseModel):
     status: str
     message: str
     reservation_id: str
