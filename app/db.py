@@ -19,8 +19,12 @@ class Database:
         if self.session:
             await self.engine.dispose()
 
-    async def get_session(self) -> AsyncGenerator[async_sessionmaker[AsyncSession], Any]:
-        async_session_maker = async_sessionmaker(self.engine, class_=AsyncSession, expire_on_commit=False)
+    async def get_session(
+        self,
+    ) -> AsyncGenerator[async_sessionmaker[AsyncSession], Any]:
+        async_session_maker = async_sessionmaker(
+            self.engine, class_=AsyncSession, expire_on_commit=False
+        )
         async with async_session_maker() as session:
             yield session
 
