@@ -19,3 +19,11 @@ class Product(Base):
 
     id: Mapped[str] = mapped_column(primary_key=True)
     available_quantity: Mapped[int] = mapped_column(nullable=False)
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[str] = mapped_column(primary_key=True)
+    username: Mapped[str] = mapped_column(nullable=False)
+    hashed_password: Mapped[str] = mapped_column(nullable=False)

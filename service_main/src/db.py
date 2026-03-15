@@ -1,9 +1,9 @@
 from typing import Any, AsyncGenerator
 
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncSession
 
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from config.settings import settings
+from src.config.settings import settings
 
 
 class Database:
