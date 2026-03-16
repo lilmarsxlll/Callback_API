@@ -5,6 +5,8 @@ import uvicorn
 
 from src.config.logging_config import get_logger, setup_logging
 from fastapi import FastAPI
+
+from src.kafka_client import start_consumer, stop_consumer
 from src.routes.routes import router
 
 from src.db import db
@@ -16,7 +18,9 @@ logger = get_logger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # noqa
     await db.connect()
+    await start_consumer()
     yield
+    await stop_consumer()
     await db.disconnect()
 
 
