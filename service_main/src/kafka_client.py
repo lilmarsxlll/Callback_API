@@ -3,16 +3,19 @@ import json
 
 from aiokafka import AIOKafkaConsumer
 
+
 from src.config.logging_config import get_logger
+from src.config.settings_for_main import settings
+
 from src.db import db
 from src.models import Product, Reservation
 
 consumer: AIOKafkaConsumer | None = None
 consumer_task: asyncio.Task | None = None
 
-KAFKA_BOOTSTRAP_SERVER = "localhost:9092"
-KAFKA_TOPIC = "reservation_requests"
-KAFKA_GROUP_ID = "service_main_group_all"
+KAFKA_BOOTSTRAP_SERVER = settings.KAFKA_BOOTSTRAP_SERVER
+KAFKA_TOPIC = settings.KAFKA_TOPIC
+KAFKA_GROUP_ID = settings.KAFKA_GROUP_ID
 
 logger = get_logger(__name__)
 
@@ -26,6 +29,7 @@ async def start_consumer():
         group_id=KAFKA_GROUP_ID,
         auto_offset_reset="earliest",
     )
+    await asyncio.sleep(2)
     await consumer.start()
     logger.info("Consumer connected to Kafka")
     consumer_task = asyncio.create_task(_consume_loop())

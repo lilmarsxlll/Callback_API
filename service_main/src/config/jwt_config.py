@@ -2,7 +2,7 @@ from datetime import timedelta, datetime
 
 import jwt
 
-from src.config.settings import settings
+from src.config.settings_for_main import settings
 
 
 def create_jwt_token(data: dict):

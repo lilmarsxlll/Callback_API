@@ -1,47 +1,71 @@
 services:
 
   postgres:
-    image: postgres:18-alpine
+    image: postgres:18
+    restart: unless-stopped
     container_name: psgr
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+    env_file:
+      - service_main/.env
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql
+    ports:
+      - "5433:5432"
     networks:
       - appnet
+
+
+  broker:
+    image: apache/kafka:4.2.0
+    container_name: broker
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@broker:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    networks:
+      - appnet
+    ports:
+      - "9092:9092"
+
 
   migrations:
     build:
       context: .
       dockerfile: service_main/Dockerfile
     command: alembic upgrade head
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_HOST=${POSTGRES_HOST}
+    env_file:
+      - service_main/.env
+    volumes:
+      - migrations-data:/src/migrations-data
     depends_on:
       - postgres
+    networks:
+      - appnet
 
   service_main:
     build:
       context: .
       dockerfile: service_main/Dockerfile
     image: service_main
-    environment:
-      PYTHONUNBUFFERED: 1
-        - POSTGRES_USER=${POSTGRES_USER}
-        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-        - POSTGRES_DB=${POSTGRES_DB}
-        - POSTGRES_HOST=${POSTGRES_HOST}
+    env_file:
+      - service_main/.env
     volumes:
-      - .:/python-src
+      - service_main-data:/src
     ports:
       - "8000:3000"
     depends_on:
       - postgres
+      - broker
+      - migrations
     networks:
       - appnet
 
@@ -50,14 +74,16 @@ services:
       context: .
       dockerfile: service_client/Dockerfile
     image: service_client
-    environment:
-      PYTHONUNBUFFERED: 1
+    env_file:
+      - service_client/.env
     volumes:
-      - .:/python-src
+      - service_client-data:/src
     ports:
     - "8001:8001"
     depends_on:
       - service_main
+      - broker
+      - postgres
     networks:
       - appnet
 
@@ -68,4 +94,6 @@ networks:
 
 volumes:
   postgres-data:
-
+  migrations-data:
+  service_main-data:
+  service_client-data:

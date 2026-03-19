@@ -1,12 +1,9 @@
 import asyncio
 import uuid
 
-from src.config.settings import settings
+
 from src.config.logger_config import setup_logging, get_logger
 from src.kafka_client import send_reservation, start_producer, stop_producer
-
-RESERVATION_API_URL = settings.RESERVATION_API_URL
-ACCESS_TOKEN = settings.ACCESS_TOKEN
 
 setup_logging()
 logger = get_logger(__name__)
