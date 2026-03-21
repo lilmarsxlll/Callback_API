@@ -1,15 +1,21 @@
 import asyncio
 import uuid
 
-
+from src.config.jwt_config_for_client import verify_jwt_token
 from src.config.logger_config import setup_logging, get_logger
+from src.config.settings_for_client import settings
 from src.kafka_client import send_reservation, start_producer, stop_producer
 
 setup_logging()
 logger = get_logger(__name__)
 
+JWT_TOKEN = settings.JWT_TOKEN
+
 
 async def make_reservation():
+    if not verify_jwt_token(JWT_TOKEN):
+        logger.error("JWT authentication failed")
+        return
     await start_producer()
     try:
         while True:

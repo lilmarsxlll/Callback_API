@@ -2,8 +2,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    RESERVATION_API_URL: str
-    ACCESS_TOKEN: str
+    JWT_TOKEN: str
+    JWT_SECRET_KEY: str
+    JWT_ALGORITHM: str
 
     KAFKA_BOOTSTRAP_SERVER: str
     KAFKA_TOPIC: str
