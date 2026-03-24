@@ -1,6 +1,6 @@
-service_main/.env
+../service_main/.env
 .env
-service_client/.env
+../service_client/.env
 /.idea/
 __pycache__/
 *.pyc

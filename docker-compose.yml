@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     container_name: psgr
     env_file:
-      - service_main/.env
+      - ./service_main/.env
     volumes:
       - postgres-data:/var/lib/postgresql
     ports:
@@ -43,7 +43,7 @@ services:
       dockerfile: service_main/Dockerfile
     command: alembic upgrade head
     env_file:
-      - service_main/.env
+      - ./service_main/.env
     volumes:
       - migrations-data:/src/migrations-data
     depends_on:
@@ -57,7 +57,7 @@ services:
       dockerfile: service_main/Dockerfile
     image: service_main
     env_file:
-      - service_main/.env
+      - ./service_main/.env
     volumes:
       - service_main-data:/src
     ports:
@@ -75,7 +75,7 @@ services:
       dockerfile: service_client/Dockerfile
     image: service_client
     env_file:
-      - service_client/.env
+      - ./service_client/.env
     volumes:
       - service_client-data:/src
     ports:
