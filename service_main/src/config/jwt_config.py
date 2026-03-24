@@ -1,6 +1,7 @@
 from datetime import timedelta, datetime
 
 import jwt
+from fastapi import HTTPException
 
 from src.config.settings_for_main import settings
 
@@ -19,7 +20,12 @@ def create_jwt_token(data: dict):
 
 
 def decode_jwt_token(token: str):
-    payload = jwt.decode(
-        token, settings.JWT_SECRET_KEY, algorithms=settings.JWT_ALGORITHM
-    )
-    return payload
+    try:
+        payload = jwt.decode(
+            token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
+        )
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
