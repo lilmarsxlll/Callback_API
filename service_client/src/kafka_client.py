@@ -1,4 +1,3 @@
-import asyncio
 import json
 
 from aiokafka import AIOKafkaProducer
@@ -16,7 +15,6 @@ logger = get_logger(__name__)
 async def start_producer() -> None:
     global producer
     producer = AIOKafkaProducer(bootstrap_servers=KAFKA_BOOTSTRAP_SERVER)
-    await asyncio.sleep(4)
     await producer.start()
     logger.info("Producer started")
 

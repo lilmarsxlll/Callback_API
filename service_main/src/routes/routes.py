@@ -1,8 +1,8 @@
 from src.db import db
 from fastapi import APIRouter, Depends, HTTPException
 from src.models import Product, Reservation
-from src.schemas import ReserveRequest, ReserveResponse
-from sqlalchemy import select, delete
+from src.schemas import ReserveRequest, ReserveResponse, HealthyResponse
+from sqlalchemy import select, delete, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.utils.auth import get_current_user
@@ -136,3 +136,18 @@ async def login(request: LoginRequest, session: AsyncSession = Depends(db.get_se
     token = create_jwt_token({"sub": user.username})
 
     return {"access_token": token, "token_type": "bearer"}
+
+
+@router.get("/health")
+async def health_check(session: AsyncSession = Depends(db.get_session)):
+    try:
+        await session.execute(text("SELECT 1"))
+        return HealthyResponse(
+            status="success",
+            message="Health check successful.",
+        )
+    except Exception:
+        return HealthyResponse(
+            status="error",
+            message="Health check failed.",
+        )

@@ -16,3 +16,8 @@ class ReserveRequest(BaseModel):
 class LoginRequest(BaseModel):
     username: str
     password: str
+
+
+class HealthyResponse(BaseModel):
+    status: str
+    message: str

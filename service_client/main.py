@@ -36,7 +36,6 @@ async def get_jwt_token():
 
 async def make_reservation():
 
-    await asyncio.sleep(5)
     await start_producer()
     await get_jwt_token()
     try:
@@ -53,8 +52,8 @@ async def make_reservation():
                 logger.info(f"[{reservation_id}] Reservation sent to Kafka")
             except Exception as e:
                 logger.error(f"[{reservation_id}] Error sending reservation: {e}")
+            await asyncio.sleep(5)
 
-            await asyncio.sleep(3)
     finally:
         await stop_producer()
 
